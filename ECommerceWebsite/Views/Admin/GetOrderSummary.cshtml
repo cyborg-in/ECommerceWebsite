@@ -1,0 +1,40 @@
+﻿@model ECommerceWebsite.Models.AdminOrderViewModel
+@{
+    ViewBag.Title = "Order Summary";
+}
+
+<h2>Order Summary</h2>
+@if (Model.Orders.Count > 0)
+{
+    <h3>Order #@Model.Orders.First().OrderNumber</h3>
+    <table class="table table-bordered">
+        <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Subtotal</th>
+        </tr>
+
+        @foreach (var order in Model.Orders)
+        {
+            <tr>
+                <td>
+                    @order.Product.Name
+                </td>
+                <td>
+                    @order.Quantity
+                </td>
+                <td>
+                    L.E. @order.SubTotal
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="2">Total</td>
+            <td>L.E. @Model.Total</td>
+        </tr>
+    </table>
+}
+else
+{
+    <p>There are no orders yet for this customer</p>
+}

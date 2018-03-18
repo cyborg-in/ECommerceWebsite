@@ -1,0 +1,104 @@
+﻿@model ECommerceWebsite.Models.AdminOrderViewModel
+@{
+    ViewBag.Title = "User's Orders";
+}
+
+<h2>User's Orders</h2>
+@if (Model.Orders.Count > 0)
+{
+<table class="table table-bordered">
+    <tr>
+        <th>Order No.</th>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Subtotal</th>
+        <th>Save</th>
+    </tr>
+    @foreach (var order in Model.Orders)
+    {
+        <tr>
+            <td>
+                @Html.ActionLink(order.OrderNumber.ToString(), "GetOrderSummary", new { orderNumber = order.OrderNumber })
+            </td>
+            <td>
+                @order.Product.Name
+            </td>
+            <td>
+                <input type="number" class="form-control qty-box" value="@order.Quantity" />
+            </td>
+            <td>
+                <label value="@order.Product.Price">L.E. @order.SubTotal</label>
+            </td>
+            <td>
+                <a href="#" value="@order.Id" class="btn btn-default save-order">Save</a>
+            </td>
+        </tr>
+    }
+</table>
+}
+else
+{
+    <p>There are no orders yet for this customer</p>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        function removeOrderItem(orderId, button) {
+            $.ajax({
+                url: "/api/Customer/RemoveOrder/" + orderId,
+                method: "delete"
+            })
+            .done(function () {
+                $(button).closest("tr").remove();
+                alert("success");
+            })
+            .fail(function () {
+                alert('fail');
+            });
+        }
+
+        function updateOrderItem(orderId, qty, subT, subLabel, newSubT) {
+            var vm = {
+                id: orderId,
+                quantity: qty,
+                subTotal: subT
+            };
+            $.ajax({
+                url: "/api/Customer/UpdateOrder/" + orderId,
+                method: "put",
+                data: vm
+            })
+            .done(function () {
+                subLabel.innerHTML = "L.E. " + newSubT;
+                alert('success');
+            })
+            .fail(function () {
+                alert('fail');
+            });
+        }
+
+        $(document).ready(function () {
+            $(".save-order").click(function () {
+                var button = this;
+                var orderId = button.attributes.value.value;
+                var qty = $(button).closest("tr").find(".qty-box").val();
+                var subLabel = $(button).closest("tr").find("label")[0];
+                var subT = parseFloat(subLabel.innerHTML.trim().substring(5));
+                var price = $(button).closest("tr").find("label").attr("value");
+                var newSubT = price * qty;
+
+                if (qty > 0) {
+                    updateOrderItem(orderId, qty, subT, subLabel, newSubT);
+                } else if (qty == 0) {
+                    removeOrderItem(orderId, button);
+                } else {
+                    alert('Invalid Quantity');
+                }
+
+            });
+        });
+    </script>
+}
+

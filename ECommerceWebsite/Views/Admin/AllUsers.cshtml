@@ -1,0 +1,50 @@
+﻿@model ECommerceWebsite.Models.AdminCustomerViewModel
+@{
+    ViewBag.Title = "AllUsers";
+}
+
+<h2>All Users</h2>
+
+<table class="table table-bordered">
+    <tr>
+        <th>User Name</th>
+        <th>Active</th>
+    </tr>
+    @foreach (var customer in Model.Customers)
+    {
+    <tr>
+        <td>@Html.ActionLink(customer.Name, "GetUserOrders", new { id = customer.Id })</td>
+        <td><input class="toggle-active" type="checkbox" name="Active" checked="@customer.UserProfile.Active" value="@customer.Id"/></td>
+    </tr>
+    }
+</table>
+
+@section scripts
+{
+    <script>
+        function status(toggleSwitch) {
+            if (toggleSwitch.checked) {
+                return "activated";
+            }
+
+            return "suspended";
+        }
+        $(document).ready(function () {
+            $(".toggle-active").click(function () {
+                var check = this;
+                var customerId = this.attributes.value.value;
+                $.ajax({
+                    url: "/api/Customer/ToggleActivity/" + customerId,
+                    method: "put"
+                })
+                .done(function () {
+                    var message = status(check);
+                    alert('User ' + message);
+                })
+                .fail(function () {
+                    alert('Something went wrong');
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,44 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>ACME</h1>
+    <p class="lead">Welcome to ACME products website. Please buy <b>ONLY</b> our products!</p>
+</div>
+
+@if (User.Identity.IsAuthenticated && User.IsInRole("User"))
+{
+    if ((bool)ViewData["Active"])
+    {
+        <div class="row">
+            <div class="col-md-4">
+                <h2>Product 1</h2>
+                <p>
+                    Product 1 Description.
+                </p>
+                <div class="btn btn-default">
+                <a href="#">Buy it</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h2>Product 2</h2>
+                <p>More exciting than product 1 apparently.</p>
+                <div class="btn btn-primary">
+                    <a style="color: white" href="#">BUY THIS</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h2>Product 3</h2>
+                <p>You get this third product as a decoy, so you'd buy product 2. What are you waiting for go ahead and buy product 2.</p>
+                <div class="btn btn-default btn-sm">
+                    <a href="#">Really? you wanna buy this?!</a>
+                </div>
+            </div>
+        </div>
+    }
+    else
+    {
+        @Html.Partial("_SuspendedAccount")
+    }
+}
